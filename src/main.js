@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router/router'
 import store from './store'
 // 加载全局样式
-// import './styles/index.less'
+import './styles/index.less'
 // npm i vant
 // 加载 Vant 核心组件
 import Vant from 'vant'

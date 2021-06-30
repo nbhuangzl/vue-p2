@@ -7,8 +7,38 @@
       </div>
     </div>
     <div class="header user-info">
-      <div class="base-info">hello</div>
-      <div class="data-stats">hi</div>
+      <div class="base-info">
+        <div class="left">
+          <van-image
+            round
+            fit="cover"
+            class="avatar"
+            src="https://img01.yzcdn.cn/vant/cat.jpeg"
+          />
+          <span class="name">头条新闻</span>
+        </div>
+        <div class="right">
+          <van-button size="mini" round>编辑资料</van-button>
+        </div>
+      </div>
+      <div class="data-stats">
+        <div class="data-item">
+          <span class="count">10</span>
+          <span class="text">头条</span>
+        </div>
+        <div class="data-item">
+          <span class="count">10</span>
+          <span class="text">头条</span>
+        </div>
+        <div class="data-item">
+          <span class="count">10</span>
+          <span class="text">头条</span>
+        </div>
+        <div class="data-item">
+          <span class="count">10</span>
+          <span class="text">头条</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -59,13 +89,38 @@ export default {
   .user-info {
     .base-info {
       height: 231px;
-      background-color: green;
       padding: 76px 32px 23px;
       box-sizing: border-box;
+      display: flex;
+      // 撑到内容的边缘
+      justify-content: space-between;
+      align-items: center;
+      .left {
+        display: flex;
+        align-items: center;
+        .avatar {
+          margin-right: 23px;
+          width: 132px;
+          height: 132px;
+        }
+        .name {
+          font-size: 30px;
+          color: black;
+        }
+      }
     }
     .data-stats {
-      height: 130px;
+      // height: 130px;
       background-color: yellowgreen;
+      display: flex;
+      .data-item {
+        flex: 1;
+        height: 130px;
+        display: flex; // flex 默认水平分布
+        flex-direction: column; // 垂直分布
+        justify-content: center;
+        align-items: center;
+      }
     }
   }
 }

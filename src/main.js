@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router/router'
-import store from './store'
+import store from './store/index'
 // 加载全局样式
 import './styles/index.less'
 // npm i vant

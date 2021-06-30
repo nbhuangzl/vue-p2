@@ -1,9 +1,17 @@
 <template>
   <div class="login-container">
     <!-- 导航栏 -->
-    <van-nav-bar title="登录" />
+    <van-nav-bar title="登录">
+      <!-- 关闭图标 -->
+      <van-icon
+        slot="left"
+        name="cross"
+        @click="$router.back()"
+      />
+    </van-nav-bar>
     <!-- 登录表单 -->
     <!--  type="number" 输入框仅能输入数字-->
+    <!-- 倒计时结束监听 用以隐藏 @finish="isCountDownShow = false"-->
     <van-form ref="loginForm" @submit="onSubmit">
       <van-field
         left-icon="phone-o"
@@ -22,7 +30,14 @@
         :rules="userFormRules.code"
       >
         <template #button>
+          <van-count-down
+            v-if="isCountDownShow"
+            :time="1000*3"
+            format="ss s"
+            @finish="isCountDownShow = false"
+          />
           <van-button
+            v-else
             native-type="button"
             class="send-msg-btn"
             round
@@ -35,15 +50,14 @@
       </van-field>
       <div class="login-btn-wrap">
         <van-button class="login-btn" block type="info" native-type="submit"
-          >提交</van-button
-        >
+          >提交</van-button>
       </div>
     </van-form>
   </div>
 </template>
 
 <script>
-import { login } from '@/api/user'
+import { login, sendSms } from '@/api/user'
 export default {
   name: 'LoginIndex',
   components: {},
@@ -71,7 +85,8 @@ export default {
           pattern: /\d{6}/,
           message: '验证码格式不符'
         }]
-      }
+      },
+      isCountDownShow: false
     }
   },
   computed: {},
@@ -90,8 +105,8 @@ export default {
       })
       // 3.提交表单 请求登录
       try {
-        const res = await login(user)
-        console.log('登录成功', res)
+        const { data } = await login(user)
+        this.$store.commit('setUser', data.data)
         this.$toast.success('登录成功')
       } catch (err) {
         if (err.response.status === 400) {
@@ -106,12 +121,23 @@ export default {
       // 1.校验手机号
       try {
         await this.$refs.loginForm.validate('mobile')
-        console.log('验证通过')
+        this.$toast('发送成功')
       } catch (err) {
-        console.log('验证失败', err)
+        return console.log('验证失败', err)
       }
       // 2.验证通过,显示倒计时
+      this.isCountDownShow = true
       // 3.请求发送验证码
+      try {
+        await sendSms(this.user.mobile)
+      } catch (err) {
+        if (err.response.status === 429) {
+          this.$toast('发送频繁, 稍后重试')
+        } else {
+          this.$toast('发送失败')
+        }
+        console.log('发送失败', err)
+      }
     }
 
   }
@@ -119,11 +145,8 @@ export default {
 </script>
 
 <style scoped lang="less">
-input::-webkit-input-placeholder {
-  color: green;
-}
 .send-msg-btn {
-  width: 152px;
+  width: 156px;
   height: 46px;
   line-height: 46px;
   font-size: 22px;

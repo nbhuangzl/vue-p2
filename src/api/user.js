@@ -8,3 +8,12 @@ export const login = data => {
     data
   })
 }
+/*
+ * 发送验证码
+ */
+export const sendSms = mobile => {
+  return request({
+    method: 'GET',
+    url: `/sys/sendSms/${mobile}`
+  })
+}

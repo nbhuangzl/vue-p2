@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const request = axios.create({
-  baseURL: '/',
+  baseURL: 'http://localhost:8081',
   timeout: 5000 // 请求超时 5000毫秒
 })
 /* 请求拦截器 */

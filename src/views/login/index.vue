@@ -1,24 +1,40 @@
 <template>
   <div class="login-container">
     <!-- 导航栏 -->
-    <van-nav-bar class="page-nav-bar" title="登录" />
+    <van-nav-bar title="登录" />
     <!-- 登录表单 -->
-    <van-form @submit="onSubmit">
+    <!--  type="number" 输入框仅能输入数字-->
+    <van-form ref="loginForm" @submit="onSubmit">
       <van-field
-        name="手机号"
-        v-model="phone"
+        left-icon="phone-o"
+        name="mobile"
+        v-model="user.mobile"
         placeholder="请输入手机号"
-        :rules="[{ required: true, message: '请输入手机号' }]"
+        :rules="userFormRules.mobile"
+        type="number"
+        maxlength="11"
       />
       <van-field
-        type="password"
-        name="验证码"
-        v-model="pwd"
+        left-icon="like-o"
+        name="code"
+        v-model="user.code"
         placeholder="请输入验证码"
-        :rules="[{ required: true, message: '请输入验证码' }]"
-      />
-      <div style="margin: 16px">
-        <van-button block type="info" native-type="submit"
+        :rules="userFormRules.code"
+      >
+        <template #button>
+          <van-button
+            native-type="button"
+            class="send-msg-btn"
+            round
+            size="small"
+            type="default"
+            @click="onSendSms"
+            >发送验证码</van-button
+          >
+        </template>
+      </van-field>
+      <div class="login-btn-wrap">
+        <van-button class="login-btn" block type="info" native-type="submit"
           >提交</van-button
         >
       </div>
@@ -27,14 +43,35 @@
 </template>
 
 <script>
+import { login } from '@/api/user'
 export default {
   name: 'LoginIndex',
   components: {},
   props: {},
   data () {
     return {
-      phone: '',
-      pwd: ''
+      user: {
+        mobile: '',
+        code: ''
+      },
+      userFormRules: {
+        mobile: [{
+          required: true,
+          message: '请输入手机号不为空'
+        },
+        {
+          pattern: /1[3|5|7|8]\d{9}/,
+          message: '手机号格式错误'
+        }],
+        code: [{
+          required: true,
+          message: '验证码不为空'
+        },
+        {
+          pattern: /\d{6}/,
+          message: '验证码格式不符'
+        }]
+      }
     }
   },
   computed: {},
@@ -42,12 +79,62 @@ export default {
   created () {},
   mounted () {},
   methods: {
-    onSubmit (values) {
-      console.log('submit', values)
+    async onSubmit () {
+      // 1.取得表单数据
+      const user = this.user
+      // 2.表单验证
+      this.$toast.loading({
+        message: '加载中...',
+        forbidClick: true, // 禁用背景点击
+        duration: 0 // 持续时间 默认2s  为0表示为持续
+      })
+      // 3.提交表单 请求登录
+      try {
+        const res = await login(user)
+        console.log('登录成功', res)
+        this.$toast.success('登录成功')
+      } catch (err) {
+        if (err.response.status === 400) {
+          this.$toast.fail('手机号或者验证码错误')
+        } else {
+          this.$toast.fail('登录失败 稍后再试')
+        }
+      }
+      // 4. 依据请求响应结果处理后续操作
+    },
+    async onSendSms () {
+      // 1.校验手机号
+      try {
+        await this.$refs.loginForm.validate('mobile')
+        console.log('验证通过')
+      } catch (err) {
+        console.log('验证失败', err)
+      }
+      // 2.验证通过,显示倒计时
+      // 3.请求发送验证码
     }
+
   }
 }
 </script>
 
 <style scoped lang="less">
+input::-webkit-input-placeholder {
+  color: green;
+}
+.send-msg-btn {
+  width: 152px;
+  height: 46px;
+  line-height: 46px;
+  font-size: 22px;
+  color: #666;
+  background-color: #ededed;
+}
+.login-btn-wrap {
+  padding: 53px 33px;
+  .login-btn {
+    background-color: #6db4fb;
+    border: none;
+  }
+}
 </style>

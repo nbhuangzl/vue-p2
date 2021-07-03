@@ -6,6 +6,7 @@
       <van-icon
         slot="left"
         name="cross"
+        color="black"
         @click="$router.back()"
       />
     </van-nav-bar>
@@ -108,6 +109,8 @@ export default {
         const { data } = await login(user)
         this.$store.commit('setUser', data.data)
         this.$toast.success('登录成功')
+        // 功能不严谨 待优化
+        this.$router.back()
       } catch (err) {
         if (err.response.status === 400) {
           this.$toast.fail('手机号或者验证码错误')

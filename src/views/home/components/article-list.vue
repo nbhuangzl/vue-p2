@@ -12,17 +12,21 @@
         -->
       <van-list
         v-model="loading"
+        :error.sync="error"
+        error-text="请求失败，点击重新加载"
         :finished="finished"
         finished-text="没有更多了"
         @load="onLoad"
       >
-        <van-cell v-for="item in list" :key="item" :title="item" />
+        <van-cell v-for="(item, index) in list" :key="index" :title="item.title" />
       </van-list>
     </div>
 </template>
 <script>
+import { getArticles } from '@/api/article'
+
 export default {
-  name: '',
+  name: 'ArticleList',
   components: {},
   props: {
     // 定义属性
@@ -34,8 +38,11 @@ export default {
   data () {
     return {
       list: [], // 存储列表数据的数组
+      list_test: [],
       loading: false, // 控制加载中 loading状态
-      finished: false // 控制数据加载结束的状态
+      finished: false, // 控制数据加载结束的状态
+      timestamp: null, // 下一页数据的时间戳
+      error: false // 控制列表加载失败时的提示状态
     }
   },
   watch: {
@@ -47,26 +54,41 @@ export default {
   mounted () {
   },
   methods: {
-    onLoad () {
-      console.log('aaaa')
-      // 异步更新数据
-      // setTimeout 仅做示例，真实场景中一般为 ajax 请求
-      setTimeout(() => {
-        for (let i = 0; i < 10; i++) {
-          this.list.push(this.list.length + 1)
-        }
-        // 加载状态结束
+    async onLoad () {
+      try {
+        // const { xxx } = this.state; 相当于 const xxx = this.state.xxx
+        const { data } = await getArticles({
+          channel_id: this.channel.id, // 频道ID
+          timestamp: this.timestamp || Date.now(),
+          with_top: 1 // 是否包含置顶
+        })
+        // 模拟错误提示
+        // if (Math.random() > 0.5) {
+        //   JSON.parse('afadsfaf')
+        // }
+        // es6语法 const { xxx } = this.state 相当于 const xxx = this.state.xxx
+        const { results } = data.data
+        // ... 为数组的展开操作符, 它会把数组元素1个1个拿出来
+        this.list.push(...results)
+        // this.list_test.push(...[{ title: 'aa你好', name: 'aa' }, { title: 'bb你好', name: 'bb' }])
+        // console.log('测试', this.list_test)
+        // 本次数据加载之后 设置为加载结束
         this.loading = false
-
-        // 数据全部加载完成
-        if (this.list.length >= 40) {
+        // 判断数据是否全都加载完成
+        if (results.length) {
+          // 下一页数据的时间戳
+          this.timestamp = data.data.pre_timestamp
+        } else {
           this.finished = true
         }
-      }, 1000)
+      } catch (err) {
+        // console.log('请求失败', err)
+        // this.$toast('请求失败了')
+        this.error = true
+        this.loading = false
+      }
     }
   }
 }
 </script>
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>

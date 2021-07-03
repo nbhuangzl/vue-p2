@@ -75,7 +75,7 @@ export default {
 <style lang="less">
 .home-container {
   .van-nav-bar__title {
-      max-width: unset;
+    max-width: unset;
   }
 }
 </style>
@@ -92,7 +92,8 @@ export default {
   }
   // 因导航栏固定于底部 遮挡了列表文字提示特效
   padding-bottom: 85px;
-  .channel-tabs {
+  // 可添加深度操作符
+  /deep/ .channel-tabs {
     .more-btn {
       position: fixed;
       right: 0%;
@@ -119,6 +120,25 @@ export default {
     .placeholder {
       width: 66px;
       flex-shrink: 0;
+    }
+    .van-tab {
+      min-width:200px;
+      height: 82px;
+      border-right: 2px solid #edeff3;
+      font-size: 30px;
+      color: #777777
+    }
+    .van-tab--active {
+      color: #333333;
+    }
+    .van-tabs__line {
+      bottom:8px;
+      background: #3296fa;
+      width:31px;
+      height:6px;
+    }
+    .van-tabs__nav {
+      padding-bottom: 0;
     }
   }
 }

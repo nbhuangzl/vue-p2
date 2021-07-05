@@ -10,24 +10,37 @@
           数据更新完毕后，将 loading 设置成 false 即可
           若数据已全部加载完毕，则直接将 finished 设置成 true 即可。
         -->
-      <van-list
-        v-model="loading"
-        :error.sync="error"
-        error-text="请求失败，点击重新加载"
-        :finished="finished"
-        finished-text="没有更多了"
-        @load="onLoad"
-      >
-        <van-cell v-for="(item, index) in list" :key="index" :title="item.title" />
-      </van-list>
+      <van-pull-refresh
+        v-model="refreshLoading"
+        :success-text="refreshSuccessText"
+        :success-duration="1500"
+        @refresh="onRefresh">
+        <van-list
+          v-model="loading"
+          :error.sync="error"
+          error-text="请求失败，点击重新加载"
+          :finished="finished"
+          finished-text="没有更多了"
+          @load="onLoad"
+        >
+          <article-item
+            v-for="(article, index) in list"
+            :key="index"
+            :article="article"/>
+          <!-- <van-cell v-for="(item, index) in list" :key="index" :title="item.title" /> -->
+        </van-list>
+      </van-pull-refresh>
     </div>
 </template>
 <script>
 import { getArticles } from '@/api/article'
+import ArticleItem from '@/components/article-item'
 
 export default {
   name: 'ArticleList',
-  components: {},
+  components: {
+    ArticleItem
+  },
   props: {
     // 定义属性
     channel: {
@@ -42,7 +55,9 @@ export default {
       loading: false, // 控制加载中 loading状态
       finished: false, // 控制数据加载结束的状态
       timestamp: null, // 下一页数据的时间戳
-      error: false // 控制列表加载失败时的提示状态
+      error: false, // 控制列表加载失败时的提示状态
+      refreshLoading: false,
+      refreshSuccessText: '刷新成功'
     }
   },
   watch: {
@@ -87,8 +102,38 @@ export default {
         this.error = true
         this.loading = false
       }
+    },
+    async onRefresh () {
+      try {
+        // const { xxx } = this.state; 相当于 const xxx = this.state.xxx
+        const { data } = await getArticles({
+          channel_id: this.channel.id, // 频道ID
+          timestamp: Date.now(), // 下拉刷新 每次请求最新数据
+          with_top: 1 // 是否包含置顶
+        })
+        // 模拟错误提示
+        if (Math.random() > 0.5) {
+          JSON.parse('afadsfaf')
+        }
+        // 将数据追加到列表顶部
+        const { results } = data.data
+        this.list.unshift(...results)
+        // 刷新成功提示
+        this.refreshSuccessText = `刷新成功,更新了${results.length}条数据`
+        // 本次数据加载之后 设置为加载结束
+        this.refreshLoading = false
+      } catch (err) {
+        // console.log('请求失败', err)
+        this.refreshSuccessText = '刷新失败'
+        this.refreshLoading = false
+      }
     }
   }
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.article-list {
+  height: 82vh;
+  overflow-y: auto;
+}
+</style>

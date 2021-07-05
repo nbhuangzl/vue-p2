@@ -1,6 +1,14 @@
 <template>
   <div class="qa-container">
-qaqa
+         <van-button
+          class="channel-edit-btn"
+          type="danger"
+          round
+          plain
+          size="mini"
+          style="font-size:12px"
+          >编辑1
+        </van-button>
   </div>
 </template>
 <script>

@@ -1,7 +1,8 @@
 <template>
   <div class="home-container">
     <!-- 导航栏 -->
-    <van-nav-bar class="page-nav-bar">
+    <!-- 搜索导航栏固定 不跟随数据1起移动 添加fixed -->
+    <van-nav-bar class="page-nav-bar" fixed>
       <!-- 自定义插槽 -->
       <van-button
         class="search-btn"
@@ -27,10 +28,21 @@
       <!-- 标签到最后时 部分内容 被最右边的图标 所以加入占位符 flex-shrink: 0 宽度设置才生效-->
       <div slot="nav-right" class="placeholder"></div>
       <!-- slot="nav-right"插入到最右侧tab的右边 -->
-      <div slot="nav-right" class="more-btn">
+      <div
+        slot="nav-right"
+        class="more-btn"
+        @click="isChannelEditShow=true">
         <van-icon size="25px" class="points-icon" name="points"/>
       </div>
     </van-tabs>
+    <van-popup
+      v-model="isChannelEditShow"
+      closeable
+      position="bottom"
+      close-icon-position="top-left"
+      :style="{ height: '100%' }">
+      <channel-edit :my-channels="channels"/>
+    </van-popup>
 
   </div>
 </template>
@@ -38,17 +50,20 @@
 
 import { getUserChannels } from '@/api/user'
 import ArticleList from './components/article-list'
+import ChannelEdit from './components/channel-edit.vue'
 
 export default {
   name: 'HomeIndex',
   components: {
-    ArticleList
+    ArticleList,
+    ChannelEdit
   },
   props: {},
   data () {
     return {
       active: 0,
-      channels: [] // 频道列表
+      channels: [], // 频道列表
+      isChannelEditShow: false
     }
   },
   watch: {},
@@ -81,6 +96,9 @@ export default {
 </style>
 <style lang="less" scoped>
 .home-container {
+  padding-top: 160px;
+  // 因导航栏固定于底部 遮挡了列表文字提示特效
+  padding-bottom: 85px;
   .search-btn {
     width: 555px;
     height: 64px;
@@ -88,12 +106,20 @@ export default {
     .van-button__icon {
       color:white
     }
-    // 去除边框
   }
-  // 因导航栏固定于底部 遮挡了列表文字提示特效
-  padding-bottom: 85px;
   // 可添加深度操作符
   /deep/ .channel-tabs {
+    // .van-tabs__content {
+    //   min-height: 30vh;
+    // }
+    .van-tabs__wrap {
+      height: 78px;
+      position: fixed;
+      top: 92px;
+      z-index: 1;
+      left: 0;
+      right: 0;
+    }
     .more-btn {
       position: fixed;
       right: 0%;

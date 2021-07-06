@@ -41,7 +41,10 @@
       position="bottom"
       close-icon-position="top-left"
       :style="{ height: '100%' }">
-      <channel-edit :my-channels="channels"/>
+      <channel-edit
+        :my-channels="channels"
+        :active="active"
+        @update-active="onUpdateActive"/>
     </van-popup>
 
   </div>
@@ -78,11 +81,14 @@ export default {
       try {
         const { data } = await getUserChannels()
         this.channels = data.data.channels
-        console.log(data)
-        console.log(this.channels)
       } catch (err) {
         this.$toast('频道数据加载失败')
       }
+    },
+    onUpdateActive (index, isChannelEditShow = true) {
+      // console.log('home', index)
+      this.active = index
+      this.isChannelEditShow = isChannelEditShow
     }
   }
 }

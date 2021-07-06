@@ -4,23 +4,42 @@
         <div slot="title">我的频道</div>
         <van-button
           class="edit-btn"
-          type="danger"
+          type="primary"
           round
           plain
           size="mini"
+          @click="isEdit = !isEdit"
           >
-          编辑
+          {{ isEdit ? '完成' : '编辑'}}
         </van-button>
       </van-cell>
       <van-grid class="my-grid" :gutter="10" clickable>
         <van-grid-item
-          icon="clear"
           class="grid-item"
           v-for="(channel, index) in myChannels"
           :key="index"
-          :text="channel.name" />
+          @click="onMyChannelClick(channel, index)">
+          <!--
+            v-bind:class 语法
+            1个对象中 key表示要作用的css类名
+            对象那个中的value要计算出布尔值
+            true 则添加 key 到 class属性中 <class="text active ">
+            false 不类名
+               -->
+          <van-icon
+            slot="icon"
+            name="clear"
+            v-show="isEdit && !fixedChannels.includes(channel.id)"
+            >
+            </van-icon>
+          <span
+            class="text"
+            :class="{ active: index === active }"
+            slot="text">
+            {{channel.name}}
+          </span>
+        </van-grid-item>
       </van-grid>
-
       <van-cell :border="false">
         <div slot="title">频道推荐</div>
       </van-cell>
@@ -30,35 +49,100 @@
           clickable
           icon="plus"
           class="grid-item"
-          v-for="value in 4"
-          :key="value"
-          text="文字111" />
+          v-for="(channel, index) in recommendChannels"
+          :key="index"
+          :text="channel.name"
+          @click="onAddChannel(channel)"/>
       </van-grid>
     </div>
 </template>
 <script>
+import { getAllChannels } from '@/api/channel'
+
 export default {
   name: 'ChannelEdit',
   components: {},
+  // props属性 用以接受外部传入数据
   props: {
     myChannels: {
       type: Array,
+      required: true
+    },
+    active: {
+      type: Number,
       required: true
     }
   },
   data () {
     return {
+      allChannels: [], // 所有频道
+      isEdit: false, // 控制编辑状态
+      fixedChannels: [1] // 我的频道中 预留固定的频道
     }
   },
   watch: {
   },
+  // 计算属性 存有缓存
+  // 计算属性 会观测 内部依赖数据的变化
+  // 若 以来的数据发生变化 则 计算属性 会重新执行
   computed: {
+    // 方式2
+    recommendChannels () {
+      return this.allChannels.filter(channel => {
+        return !this.myChannels.find(myChannel => {
+          return myChannel.id === channel.id
+        })
+      })
+    }
+    // 方式1
+    // recommendChannels () {
+    //   const channels = []
+    //   this.allChannels.forEach(channel => {
+    //     const ret = this.myChannels.find(myChannel => {
+    //       return myChannel.id === channel.id
+    //     })
+    //     if (!ret) {
+    //       channels.push(channel)
+    //     }
+    //   })
+    //   return channels
+    // }
   },
   created () {
+    this.loadAllChannels()
   },
   mounted () {
   },
   methods: {
+    async loadAllChannels () {
+      try {
+        const { data } = await getAllChannels()
+        this.allChannels = data.data.channels
+      } catch (err) {
+        this.$toast('数据加载失败')
+      }
+    },
+    onAddChannel (channel) {
+      this.myChannels.push(channel)
+      // console.log(channel.id)
+    },
+    onMyChannelClick (channel, index) {
+      // 编辑状态, 执行删除频道
+      if (this.isEdit) {
+        if (this.fixedChannels.includes(channel.id)) {
+          return
+        }
+        this.myChannels.splice(index, 1)
+        if (index < this.active) {
+          // 让激活频道的索引 -1
+          this.$emit('update-active', this.active - 1, true)
+        }
+      } else {
+        // 非编辑状态, 执行切换频道
+        // 父子通信, 子组件告知父组件
+        this.$emit('update-active', index, false)
+      }
+    }
   }
 }
 </script>
@@ -79,13 +163,19 @@ export default {
     .van-grid-item__content {
       text-overflow:ellipsis;
       background-color: #f6f4f4;
-      .van-grid-item__text {
+      .van-grid-item__text, .text {
         font-size: 26px;
         color: #222;
         white-space: nowrap;
         margin-top: 0;
         // overflow: hidden; /*溢出的部分隐藏*/
         // text-overflow: clip; /*ellipsis:文本溢出显示省略号（...）；clip：不显示省略标记（...），而是简单的裁切*/
+      }
+      .active {
+        color: red;
+      }
+      .van-grid-item__icon-wrapper {
+        position: unset;
       }
     }
   }

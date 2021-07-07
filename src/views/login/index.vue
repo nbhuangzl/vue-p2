@@ -152,7 +152,7 @@ export default {
   width: 156px;
   height: 46px;
   line-height: 46px;
-  font-size: 22px;
+  font-size: 20px;
   color: #666;
   background-color: #ededed;
 }

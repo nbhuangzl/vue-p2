@@ -57,7 +57,13 @@
     </div>
 </template>
 <script>
-import { getAllChannels } from '@/api/channel'
+import {
+  getAllChannels,
+  addUserChannel,
+  deleteUserChannel
+} from '@/api/channel'
+import { mapState } from 'vuex'
+import { setItem } from '@/utils/storage'
 
 export default {
   name: 'ChannelEdit',
@@ -86,6 +92,8 @@ export default {
   // 计算属性 会观测 内部依赖数据的变化
   // 若 以来的数据发生变化 则 计算属性 会重新执行
   computed: {
+    // 将vuex容器中user对象 映射到 当前页
+    ...mapState(['user']),
     // 方式2
     recommendChannels () {
       return this.allChannels.filter(channel => {
@@ -122,25 +130,58 @@ export default {
         this.$toast('数据加载失败')
       }
     },
-    onAddChannel (channel) {
+    async onAddChannel (channel) {
       this.myChannels.push(channel)
-      // console.log(channel.id)
+      // 数据持久化
+      if (this.user) {
+        try {
+          // 已登录 数据库存储
+          await addUserChannel({
+            id: channel.id,
+            seq: this.myChannels.length // 序号
+          })
+        } catch (err) {
+          this.$toast('保存失败, 请稍后重试')
+        }
+      } else {
+        // 未登录 将数据存储到本地
+        setItem('MY_CHANNELS', this.myChannels)
+      }
     },
     onMyChannelClick (channel, index) {
       // 编辑状态, 执行删除频道
       if (this.isEdit) {
+        // 如果是固定频道 则不删除
         if (this.fixedChannels.includes(channel.id)) {
           return
         }
+        // 2. 删除频道
         this.myChannels.splice(index, 1)
+        // 若是 删除 标红频道之前的频道
         if (index < this.active) {
           // 让激活频道的索引 -1
           this.$emit('update-active', this.active - 1, true)
         }
+        // 持久化
+        this.deleteChannel(channel)
       } else {
         // 非编辑状态, 执行切换频道
         // 父子通信, 子组件告知父组件
         this.$emit('update-active', index, false)
+      }
+    },
+    async deleteChannel (channel) {
+      try {
+        if (this.user) {
+          // 已登录 则将数据更新到线上
+          await deleteUserChannel(channel.id)
+          console.log(this.user)
+        } else {
+          // 未登录 将数据更新到本地
+          setItem('MY_CHANNELS', this.myChannels)
+        }
+      } catch (err) {
+        this.$toast('操作失败, 请稍后重试')
       }
     }
   }

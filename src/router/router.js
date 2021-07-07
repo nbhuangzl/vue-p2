@@ -5,7 +5,7 @@ Vue.use(Router)
 // 路由表
 const routes = [
   {
-    path: '/Login',
+    path: '/login',
     name: 'login',
     // component: () => import('@/views/login/index.vue')
     // 自动加载目录下的index.vue
@@ -37,6 +37,13 @@ const routes = [
         component: () => import('@/views/video')
       }
     ]
+  },
+  {
+    path: '/search',
+    name: 'search',
+    // component: () => import('@/views/login/index.vue')
+    // 自动加载目录下的index.vue
+    component: () => import('@/views/search')
   }
 ]
 const router = new Router({

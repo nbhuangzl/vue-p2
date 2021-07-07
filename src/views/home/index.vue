@@ -11,6 +11,7 @@
         type="info"
         round
         icon="search"
+        to="/search"
       >搜索</van-button>
     </van-nav-bar>
     <!-- 频道列表 -->
@@ -54,6 +55,7 @@
 import { getUserChannels } from '@/api/user'
 import ArticleList from './components/article-list'
 import ChannelEdit from './components/channel-edit.vue'
+import { getItem } from '@/utils/storage'
 
 export default {
   name: 'HomeIndex',
@@ -78,11 +80,38 @@ export default {
   mounted () {},
   methods: {
     async loadChannels () {
+      // // 未区分登录与未未登录
+      // try {
+      //   const { data } = await getUserChannels()
+      //   this.channels = data.data.channels
+      // } catch (err) {
+      //   this.$toast('频道数据加载失败')
+      // }
       try {
-        const { data } = await getUserChannels()
-        this.channels = data.data.channels
+        let channels = []
+        if (this.user) {
+          // 已登录 请求获取用户频道列表
+          const { data } = await getUserChannels()
+          channels = data.data.channels
+          console.log('用户已登录')
+        } else {
+          console.log('用户未登录')
+          // 未登录 判断是否有本地的频道列表数据
+          const localChannels = getItem('MY_CHANNELS')
+          // 有 拿来用
+          if (localChannels) {
+            console.log('已有 拿来', localChannels)
+            channels = localChannels
+          } else {
+            console.log('没有')
+            // 没有 getUserChannels后台controller 判断出用户未登录时 返回默认频道
+            const { data } = await getUserChannels()
+            channels = data.data.channels
+          }
+        }
+        this.channels = channels
       } catch (err) {
-        this.$toast('频道数据加载失败')
+        this.$toast('xxx')
       }
     },
     onUpdateActive (index, isChannelEditShow = true) {

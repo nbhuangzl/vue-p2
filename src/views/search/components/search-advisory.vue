@@ -1,11 +1,22 @@
 <template>
   <div class="search-advisory">
-    <van-cell
+    <!-- <van-cell
       :title="ad_text"
       icon="search"
       v-for="(ad_text, index) in advisory"
       :key="index"
     >
+    </van-cell>-->
+    <!-- 双花括号绑定 纯文本显示 -->
+    <!-- <div>{{htmlStrTest}}</div> -->
+    <!-- v-html 可渲染 -->
+    <!-- <div v-html="htmlStrTest"></div> -->
+    <van-cell
+      icon="search"
+      v-for="(ad_text, index) in advisory"
+      :key="index"
+    >
+      <div slot="title" v-html="highlight(ad_text)"></div>
     </van-cell>
   </div>
 </template>
@@ -25,7 +36,8 @@ export default {
   },
   data () {
     return {
-      advisory: [] // 联想建议数据列表
+      advisory: [], // 联想建议数据列表
+      htmlStrTest: 'Hello <span style="color: red">World</span>' // 测试数据
     }
   },
   watch: {
@@ -68,10 +80,22 @@ export default {
       } catch (err) {
         this.$toast('数据加载失败, 请稍后重试')
       }
+    },
+    highlight (text) {
+      const highlightStr = `<span class="active">${this.searchText}</span>`
+      // 正则表达式 gi:gloable ignorecase
+      const reg = new RegExp(this.searchText, 'gi')
+      const var01 = text.replace(reg, highlightStr)
+      // console.log(var01)
+      return var01
     }
   }
 }
 </script>
 <style lang="less" scoped>
-
+.search-advisory {
+  /deep/ span.active {
+    color: #3296fa;
+  }
+}
 </style>

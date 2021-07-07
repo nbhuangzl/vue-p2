@@ -18,7 +18,7 @@ export const getAllChannels = () => {
  */
 export const addUserChannel = channel => {
   return request({
-    method: 'PATCH',
+    method: 'POST', // POST改为PATCH 后端就能响应
     url: '/sys/addUserChannel',
     data: {
       channels: [channel]

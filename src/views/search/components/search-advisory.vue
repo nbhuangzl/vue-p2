@@ -15,6 +15,7 @@
       icon="search"
       v-for="(ad_text, index) in advisory"
       :key="index"
+      @click="$emit('search', ad_text)"
     >
       <div slot="title" v-html="highlight(ad_text)"></div>
     </van-cell>

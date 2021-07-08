@@ -30,13 +30,16 @@
       @search="onSearch"
       />
     <!-- 联想建议 -->
-    <search-history v-else/>
+    <!-- 父组件的searchHistories 传递给 子组件的search-history -->
+    <search-history
+      v-else
+      :search-histories="searchHistories"/>
     </div>
 </template>
 <script>
-import SearchHistory from './components/search-history.vue'
-import SearchAdvisory from './components/search-advisory.vue'
-import SearchResult from './components/search-result.vue'
+import SearchHistory from './components/search-history'
+import SearchAdvisory from './components/search-advisory'
+import SearchResult from './components/search-result'
 
 export default {
   name: 'SearchIndex',
@@ -45,7 +48,8 @@ export default {
   data () {
     return {
       searchText: '',
-      isResultShow: false // 控制搜索结果的展示
+      isResultShow: false, // 控制搜索结果的展示
+      searchHistories: [] // 历史记录
     }
   },
   watch: {
@@ -59,7 +63,18 @@ export default {
   methods: {
     onSearch (val) {
       // this.$toast(val)
-      this.searchText = val // 将点击的联想建议内容 传递给父组件的搜索框内
+      // 对于联想建议: 就是将点击的联想建议内容 传递给父组件的搜索框内
+      this.searchText = val // 更新文本框内容
+      // 存储搜索的历史记录
+      // 要求: 不重复, 最新排最前面
+      // this.searchHistories.push(val)
+      const index = this.searchHistories.indexOf(val)
+      if (index !== -1) {
+        // const b = [1,2,4,5,7,3] b.splice(2,1) const b = [1,2,5,7,3]
+        this.searchHistories.splice(index, 1)
+      }
+      this.searchHistories.unshift(val)
+      // 渲染搜索结果
       this.isResultShow = true
     },
     onCancel () {
@@ -68,7 +83,7 @@ export default {
   }
 }
 </script>
-<style lang="less">
+<style lang="less" scoped>
 .search-container {
   padding-top:90px;
   .van-search__action {

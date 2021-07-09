@@ -44,6 +44,13 @@ const routes = [
     // component: () => import('@/views/login/index.vue')
     // 自动加载目录下的index.vue
     component: () => import('@/views/search')
+  },
+  {
+    // 动态路由
+    path: '/article/:articleId',
+    name: 'article',
+    component: () => import('@/views/article'),
+    props: true // 开启路由传参 将路由参数映射到组件的props数据中
   }
 ]
 const router = new Router({

@@ -111,10 +111,10 @@ export default {
           timestamp: Date.now(), // 下拉刷新 每次请求最新数据
           with_top: 1 // 是否包含置顶
         })
-        // 模拟错误提示
-        if (Math.random() > 0.5) {
-          JSON.parse('afadsfaf')
-        }
+        // // 模拟错误提示
+        // if (Math.random() > 0.5) {
+        //   JSON.parse('afadsfaf')
+        // }
         // 将数据追加到列表顶部
         const { results } = data.data
         this.list.unshift(...results)

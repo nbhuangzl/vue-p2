@@ -42,8 +42,17 @@ export default {
     }
   },
   watch: {
+    /**
+     * //简写方式
+     * searchText () {}
+     *
+     * // 完整写法
+     * searchText: {
+     *   hander () {}
+     * }
+     */
     // 监听 searchText属性 当其发生改变时 调用hander
-    // 未简写
+    // 完整写法
     searchText: {
       // 方式1，未加入lodash
       // handler (value) {
@@ -59,7 +68,7 @@ export default {
       // 参数2：延迟时间 毫秒
       // 返回值： 防抖之后的函数
       handler: debounce(function (value) {
-        console.log(value)
+        // console.log(value)
         this.loadSearchAdvisory(value)
       }, 500),
       // 该回调将会在侦听开始之后被立即调用

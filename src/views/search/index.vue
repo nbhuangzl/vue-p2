@@ -19,7 +19,7 @@
       v-if="isResultShow"
       :search-text="searchText"
       />
-    <!-- 搜索历史-->
+    <!-- 联想建议 -->
     <!-- @search="onSearch"
          监听 子组件的search事件 传递给onSearch
          -- @click="$emit('search', ad_text)
@@ -29,17 +29,24 @@
       :search-text="searchText"
       @search="onSearch"
       />
-    <!-- 联想建议 -->
+    <!-- 搜索历史-->
     <!-- 父组件的searchHistories 传递给 子组件的search-history -->
+    <!-- @clear-search-histories="searchHistories = []
+         在父组件中 监听子组件自定义的clear-search-histories事件 -->
+         <!-- @search="onSearch" 父组件监听子组件的search事件，且将子组件search事件的传参 给到父组件的onSearch-->
+         <!-- 前端调用搜索结果时， 后端顺带将历史记录存入数据库 这里持久到本地缓存即可-->
     <search-history
       v-else
-      :search-histories="searchHistories"/>
+      :search-histories="searchHistories"
+      @clear-search-histories="searchHistories = []"
+      @search="onSearch"/>
     </div>
 </template>
 <script>
 import SearchHistory from './components/search-history'
 import SearchAdvisory from './components/search-advisory'
 import SearchResult from './components/search-result'
+import { setItem, getItem } from '@/utils/storage'
 
 export default {
   name: 'SearchIndex',
@@ -49,10 +56,17 @@ export default {
     return {
       searchText: '',
       isResultShow: false, // 控制搜索结果的展示
-      searchHistories: [] // 历史记录
+      // searchHistories: [] // 历史记录 默认从localStorage取
+      searchHistories: getItem('TOUTIAO_SEARCH_HISTORIES') || []
     }
   },
   watch: {
+    // searchHistories () {
+    //   setItem('TOUTIAO_SEARCH_HISTORIES', this.searchHistories)
+    // }
+    searchHistories (val) {
+      setItem('TOUTIAO_SEARCH_HISTORIES', val)
+    }
   },
   computed: {
   },

@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import { getItem, setItem } from '@/utils/storage'
 
 Vue.use(Vuex)
-const TOKEN_KEY = 'MY_USER'
+const TOKEN_KEY = 'TOUTIAO_USER'
 // 设置state 与 mutations之后 进入views/login/index.js模块代码编写
 export default new Vuex.Store({
   state: {

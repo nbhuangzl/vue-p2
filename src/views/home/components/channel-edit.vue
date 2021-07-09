@@ -145,7 +145,7 @@ export default {
         }
       } else {
         // 未登录 将数据存储到本地
-        setItem('MY_CHANNELS', this.myChannels)
+        setItem('TOUTIAO_CHANNELS', this.myChannels)
       }
     },
     onMyChannelClick (channel, index) {
@@ -178,7 +178,7 @@ export default {
           console.log(this.user)
         } else {
           // 未登录 将数据更新到本地
-          setItem('MY_CHANNELS', this.myChannels)
+          setItem('TOUTIAO_CHANNELS', this.myChannels)
         }
       } catch (err) {
         this.$toast('操作失败, 请稍后重试')

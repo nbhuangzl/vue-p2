@@ -53,22 +53,27 @@ export default {
           per_page: this.perPage, // 每页大小
           q: this.searchText
         })
-        // console.log(data)
         // 2.将数据添加到数组列表
         const { results } = data.data
-        // console.log(results)
-        this.list.push(...results)
-        // 3.关闭loading
+        // 测试
+        // console.log(JSON.stringify(results) !== null)
+        // 3.关闭loadin
         this.loading = false
-        // 4.判断是否还有数据
-        //   若有 则更新取下页数据
-        if (results.length) {
-          // console.log(results.length)
+        // ????? vue中数据为空 如何防止空指针？？？？
+        if (JSON.stringify(results) !== null) {
+          this.list.push(...results)
           this.page++
-          //   若没有 则将加载状态
         } else {
           this.finished = true
         }
+        // //   若有 则更新取下页数据
+        // if (results.length) {
+        //   // console.log(results.length)
+        //   this.page++
+        //   //   若没有 则将加载状态
+        // } else {
+        //   this.finished = true
+        // }
       } catch (err) {
         this.error = true
         this.loading = false // 加载失败 loading关闭

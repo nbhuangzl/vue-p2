@@ -175,7 +175,6 @@ export default {
         if (this.user) {
           // 已登录 则将数据更新到线上
           await deleteUserChannel(channel.id)
-          console.log(this.user)
         } else {
           // 未登录 将数据更新到本地
           setItem('TOUTIAO_CHANNELS', this.myChannels)

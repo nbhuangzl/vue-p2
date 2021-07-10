@@ -93,17 +93,13 @@ export default {
           // 已登录 请求获取用户频道列表
           const { data } = await getUserChannels()
           channels = data.data.channels
-          console.log('用户已登录')
         } else {
-          console.log('用户未登录')
           // 未登录 判断是否有本地的频道列表数据
           const localChannels = getItem('MY_CHANNELS')
           // 有 拿来用
           if (localChannels) {
-            console.log('已有 拿来', localChannels)
             channels = localChannels
           } else {
-            console.log('没有')
             // 没有 getUserChannels后台controller 判断出用户未登录时 返回默认频道
             const { data } = await getUserChannels()
             channels = data.data.channels

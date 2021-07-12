@@ -25,6 +25,17 @@ import { deleteFollow, addFollow } from '@/api/user'
 export default {
   name: '',
   components: {},
+  // 自定义 v-model的数据名称
+  // 对应views/article/index
+  // <follow-user
+  //   class="follow-btn"
+  //   v-model="article.is_followed"
+  //   :aut-id="article.aut_id"
+  // />的is_followed
+  model: {
+    prop: 'isFollowed', // 默认名称为value
+    event: 'update-is_followed' // 默认名称为input
+  },
   props: {
     isFollowed: {
       type: Boolean,

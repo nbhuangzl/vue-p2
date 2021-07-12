@@ -45,3 +45,25 @@ export const getUserChannels = () => {
     url: '/sys/getUserChannels'
   })
 }
+
+/*
+ * 关注用户
+ */
+export const addFollow = target => {
+  return request({
+    method: 'POST',
+    url: '/sys/addFollow',
+    data: {
+      target
+    }
+  })
+}
+/*
+ * 取消关注
+ */
+export const deleteFollow = target => {
+  return request({
+    method: 'DELETE',
+    url: `/sys/deleteFollow/${target}`
+  })
+}

@@ -22,3 +22,25 @@ export const getArticleById = articleId => {
     url: `/sys/getArticleById/${articleId}`
   })
 }
+
+/*
+ * 关注用户
+ */
+export const addCollect = target => {
+  return request({
+    method: 'POST',
+    url: '/sys/addCollect',
+    data: {
+      target
+    }
+  })
+}
+/*
+ * 取消收藏
+ */
+export const deleteCollect = target => {
+  return request({
+    method: 'DELETE',
+    url: `/sys/deleteCollect/${target}`
+  })
+}

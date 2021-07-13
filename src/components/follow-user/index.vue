@@ -23,7 +23,7 @@
 <script>
 import { deleteFollow, addFollow } from '@/api/user'
 export default {
-  name: '',
+  name: 'FollowUser',
   components: {},
   // 自定义 v-model的数据名称
   // 对应views/article/index

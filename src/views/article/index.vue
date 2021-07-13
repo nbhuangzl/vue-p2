@@ -47,7 +47,14 @@
             :is-followed="article.is_followed"
             @update-is_followed="article.is_followed = $event"
             :aut-id="article.aut_id"
-          /> -->
+          />
+          v-model 所在标签 对应的组件里 默认为 props:value 监听事件为input
+          可以修改默认值 [components/follow-user/index]
+            model: {
+              prop: 'isFollowed', // 默认名称为value
+              event: 'update-is_followed' // 默认名称为input
+            },
+          -->
           <follow-user
             class="follow-btn"
             v-model="article.is_followed"
@@ -82,7 +89,22 @@
         </div>
         <van-divider>正文结束</van-divider>
         <!-- 评论列表 -->
-        <!-- <comment-list></comment-list> -->
+              <!-- 底部区域 -->
+      <div class="article-bottom">
+        <van-button
+          class="comment-btn"
+          type="default"
+          round
+          size="small"
+          >写评论</van-button>
+        <van-icon class="comment-icon" name="comment-o" :info=21 />
+        <article-collect
+          class="btn-item"
+          v-model="article.is_collected"
+          :art-id="article.art_id"
+        />
+        <van-icon name="share" color="#777777"></van-icon>
+      </div>
       </div>
       <!-- 加载失败：404 -->
       <div v-else-if="errStatus === 404" class="error-wrap">
@@ -98,17 +120,6 @@
           @click="loadArticle"
         >点击重试</van-button>
       </div>
-      <!-- 底部区域 -->
-      <div class="article-bottom">
-        <van-button
-          class="comment-btn"
-          type="default"
-          round
-          size="small"
-          >写评论</van-button>
-        <van-icon class="comment-icon" name="comment-o" :info=21 />
-        <van-icon name="share" color="#777777"></van-icon>
-      </div>
     </div>
   </div>
 </template>
@@ -116,11 +127,13 @@
 import { getArticleById } from '@/api/article'
 import { ImagePreview } from 'vant'
 import FollowUser from '@/components/follow-user'
+import ArticleCollect from '@/components/article-collect'
 
 export default {
   name: 'ArticleIndex',
   components: {
-    FollowUser
+    FollowUser,
+    ArticleCollect
   },
   props: {
     // articleId 是由router.js映射过来
@@ -325,10 +338,18 @@ export default {
     .comment-icon {
       top: 2px;
       color: #777;
+      font-size: 40px;
       .van-info {
         font-size: 16px;
         background-color: #e22829;
       }
+    }
+    .btn-item {
+      border: none;
+      padding: 0;
+      height: 30px;
+      line-height: 70px;
+      color: #777777;
     }
   }
 }

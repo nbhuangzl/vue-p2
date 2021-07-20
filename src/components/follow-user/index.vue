@@ -25,7 +25,7 @@ import { deleteFollow, addFollow } from '@/api/user'
 export default {
   name: 'FollowUser',
   components: {},
-  // 自定义 v-model的数据名称
+  // 父组件所引用的子组件标签里 v-model
   // 对应views/article/index
   // <follow-user
   //   class="follow-btn"

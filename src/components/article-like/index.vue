@@ -1,26 +1,24 @@
 <template>
   <van-button
-    :icon="isCollected ? 'star' : 'star-o'"
+    :icon="isLiked === 1 ? 'good-job' : 'good-job-o'"
     :class="{
-      collected: isCollected
+      liked: isLiked === 1
     }"
-    @click="onCollect"
+    @click="onLike"
     :loading="loading"
   />
 </template>
 <script>
-import { deleteCollect, addCollect } from '@/api/article'
-// import { deleteCollect } from '@/api/article'
 export default {
-  name: 'ArticleCollect',
+  name: 'ArticleLike',
   model: {
-    prop: 'isCollected', // 默认名称为value
-    event: 'update-is_collected' // 默认名称为input
+    prop: 'isLiked', // 默认名称为value
+    event: 'update-is_liked' // 默认名称为input
   },
   components: {},
   props: {
-    isCollected: {
-      type: Boolean,
+    isLiked: {
+      type: Number,
       required: true
     },
     artId: {
@@ -42,20 +40,20 @@ export default {
   mounted () {
   },
   methods: {
-    async onCollect () {
+    onLike () {
       // 加载中
       this.loading = true
+      let goodJob = 1
       try {
-        if (this.isCollected) {
-          // 取消收藏
-          await deleteCollect(this.artId)
+        if (this.isLiked === 1) {
+          // 取消点赞
+          goodJob = -1
         } else {
-          // 收藏
-          await addCollect(this.artId)
+          // 点赞
+          goodJob = 1
         }
-        this.$emit('update-is_collected', !this.isCollected)
-        console.log(this.isCollected)
-        this.$toast.success(!this.isCollected ? '收藏成功' : '取消收藏')
+        this.$emit('update-is_liked', goodJob)
+        console.log(goodJob)
       } catch (err) {
         // 后端限制 不能关注自己
         const message = '操作失败，请重试'
@@ -65,14 +63,15 @@ export default {
         this.$toast(message)
       }
       this.loading = false
+      console.log('123')
     }
   }
 }
 </script>
 <style lang="less" scoped>
-  .collected {
+  .liked {
     .van-icon {
-      color: #ffa500;
+      color: #e5645f;
     }
   }
 </style>

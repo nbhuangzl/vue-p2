@@ -37,7 +37,9 @@
                     :is-followed="article.is_followed"
                     修改：自定义事件
                     @update-is_followed="article.is_followed = $event"
-                    简化:v-model
+                    ---
+                    简化方式:v-model
+                    ---
                     1个组件上只能用1次v-model
                     若1个组件多个数据需要实现类似v-model
                     可以 .sync修饰符
@@ -49,7 +51,7 @@
             :aut-id="article.aut_id"
           />
           v-model 所在标签 对应的组件里 默认为 props:value 监听事件为input
-          可以修改默认值 [components/follow-user/index]
+          可以修改默认值 [例如 components/follow-user/index]
             model: {
               prop: 'isFollowed', // 默认名称为value
               event: 'update-is_followed' // 默认名称为input
@@ -88,6 +90,10 @@
         >
         </div>
         <van-divider>正文结束</van-divider>
+        <!-- 文章评论列表 -->
+        <comment-list
+          :source="article.art_id"
+        />
         <!-- 评论列表 -->
               <!-- 底部区域 -->
       <div class="article-bottom">
@@ -97,7 +103,12 @@
           round
           size="small"
           >写评论</van-button>
-        <van-icon class="comment-icon" name="comment-o" :info=21 />
+        <van-icon class="comment-icon" name="comment-o" :info="123" />
+        <article-like
+          class="btn-item"
+          v-model="article.is_liked"
+          :art-id="article.art_id"
+        />
         <article-collect
           class="btn-item"
           v-model="article.is_collected"
@@ -128,12 +139,16 @@ import { getArticleById } from '@/api/article'
 import { ImagePreview } from 'vant'
 import FollowUser from '@/components/follow-user'
 import ArticleCollect from '@/components/article-collect'
+import ArticleLike from '@/components/article-like'
+import CommentList from '@/views/article/components/comment-list'
 
 export default {
   name: 'ArticleIndex',
   components: {
     FollowUser,
-    ArticleCollect
+    ArticleCollect,
+    ArticleLike,
+    CommentList
   },
   props: {
     // articleId 是由router.js映射过来

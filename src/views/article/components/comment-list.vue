@@ -8,17 +8,25 @@
     :error="error"
     error-text="加载失败, 点击重试"
     @load="onLoad">
-   <van-cell
+    <!-- 将 van-cell 替换为 comment-item -->
+   <!-- <van-cell
      v-for="(item, index) in list"
      :key="index"
-     :title="item.content" />
+     :title="item.content" /> -->
+    <comment-item
+      v-for="(item, index) in list"
+      :key="index"
+      :comment="item"/>
   </van-list>
 </template>
 <script>
 import { getComments } from '@/api/comment'
+import CommentItem from '@/views/article/components/comment-item'
+
 export default {
   name: 'CommentList',
   components: {
+    CommentItem
   },
   props: {
     source: {
@@ -41,6 +49,7 @@ export default {
   computed: {
   },
   created () {
+    this.onLoad()
   },
   mounted () {
   },
@@ -58,6 +67,7 @@ export default {
         // 2. 數據添加到列表
         const { results } = data.data
         this.list.push(...results)
+        this.$emit('onload-success', data.data)
         // 3. loading 設置爲 false
         this.loading = false
         // 4. 判斷是否還有數據
@@ -65,13 +75,11 @@ export default {
         if (results.length) {
           // 有就更新取下一頁數據
           this.offset = data.data.last_id
-          console.log('offset数据', this.offset)
         } else {
           // 沒有 finished 設置為結束
           this.finished = true
         }
       } catch (err) {
-        console.log('err show')
         this.error = true
         this.loading = false
       }

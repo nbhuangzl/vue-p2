@@ -5,7 +5,7 @@
      class="page-nav-bar"
      left-arrow
      title="黑马头条"
-     @click-left="$router.back()" >
+     @click-left="$router.back()">
     </van-nav-bar>
     <div class="main-wrap">
       <!--加载中-->
@@ -93,6 +93,7 @@
         <!-- 文章评论列表 -->
         <comment-list
           :source="article.art_id"
+          @onload-success="totalCommentCount = $event.total_count"
         />
         <!-- 评论列表 -->
               <!-- 底部区域 -->
@@ -103,7 +104,10 @@
           round
           size="small"
           >写评论</van-button>
-        <van-icon class="comment-icon" name="comment-o" :info="123" />
+        <van-icon
+          class="comment-icon"
+          name="comment-o"
+          :info="totalCommentCount" />
         <article-like
           class="btn-item"
           v-model="article.is_liked"
@@ -162,8 +166,8 @@ export default {
     return {
       article: {}, // 文章详情
       loading: true, // 加载中的loading状态
-      errStatus: 0 // 失败的状态码
-
+      errStatus: 0, // 失败的状态码
+      totalCommentCount: 0
     }
   },
   watch: {

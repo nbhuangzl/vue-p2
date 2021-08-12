@@ -23,9 +23,10 @@ stock_code_queue = queue.Queue(len(stock_code_tuple))
 for i in range(len(stock_code_tuple)):
     stock_code_queue.put(stock_code_tuple[i][0])
 def get_stock_today():
-
     stock = ts.get_today_all()
 
+    cur.execute("delete from stock_realtime_today")
+    conn.commit()
     for row in stock.itertuples():
         cur.execute(
             "INSERT INTO stock_realtime_today(code,name,pre_close,price,change_percent, open, high, low, volume,amount)"

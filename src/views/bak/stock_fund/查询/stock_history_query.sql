@@ -70,12 +70,12 @@ left join
 stock_basic_info b
 on a.code = b.code
 where b.industry = '供气供热' 
-and b.code = '605028'
+-- and b.code = '605028'
 order by date_fmt desc
 
 ) o
 group by o.industry,o.name,o.code,o.month_fmt
 )o2
-where o2.month_fmt = '08' or o2.month_fmt = '07' or o2.month_fmt = '06'
+where o2.month_fmt = '08' -- or o2.month_fmt = '07' or o2.month_fmt = '06'
 )o3
 order by o3.week2 desc

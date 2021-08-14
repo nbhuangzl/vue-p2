@@ -1,8 +1,8 @@
 -- select * from stock_basic_info where name like '%线缆%';
 
--- select * from stock_history sh where DATE_FORMAT(sh.date_trade,'%m%d') = '0531' and sh.code= '600803'
+-- select * from stock_history sh where code='605028' DATE_FORMAT(sh.date_trade,'%m%d') = '0531' and sh.code= '600803'
 SELECT * FROM (
-SELECT o2.industry,o2.code, o2.name,o2.month_fmt,
+SELECT o2.industry,o2.code, o2.name,o2.month_fmt,o2.close,
 o2.d1,o2.d2,o2.d3,o2.d4,o2.d5,o2.d6,o2.d7,o2.d8,o2.d9,
 case o2.month_fmt 
              when '01' then d4+d5+d6+d7+d8
@@ -32,7 +32,7 @@ case o2.month_fmt
 						 when '08' then d23+d24+d25+d26+d27
 						 end week4 FROM (
 select 
-      o.industry,o.name,o.code,o.month_fmt,      SUM(CASE o.date_fmt WHEN '01' THEN o.pct_chg  ELSE 0 END ) as d1,
+      o.industry,o.name,o.code,o.month_fmt,o.close,      SUM(CASE o.date_fmt WHEN '01' THEN o.pct_chg  ELSE 0 END ) as d1,
 			SUM(CASE o.date_fmt WHEN '02' THEN o.pct_chg  ELSE 0 END ) as d2,
 			      SUM(CASE o.date_fmt WHEN '03' THEN o.pct_chg  ELSE 0 END ) as d3,
 			SUM(CASE o.date_fmt WHEN '04' THEN o.pct_chg  ELSE 0 END ) as d4,
@@ -70,10 +70,12 @@ left join
 stock_basic_info b
 on a.code = b.code
 where b.industry = '供气供热' 
--- and b.code = '601139'
+and b.code = '605028'
+order by date_fmt desc
+
 ) o
 group by o.industry,o.name,o.code,o.month_fmt
 )o2
 where o2.month_fmt = '08' or o2.month_fmt = '07' or o2.month_fmt = '06'
 )o3
-order by o3.week1 desc
+order by o3.week2 desc
